@@ -1,0 +1,315 @@
+<div class="menu-container">
+  <div class="menu-header">
+    <div class="menu-tabs">
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'all'"
+        (click)="setActiveTab('all')">
+        All Items
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'starters'"
+        (click)="setActiveTab('starters')">
+        Starters
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'main'"
+        (click)="setActiveTab('main')">
+        Main Course
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'desserts'"
+        (click)="setActiveTab('desserts')">
+        Desserts
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'drinks'"
+        (click)="setActiveTab('drinks')">
+        Drinks
+      </button>
+    </div>
+    <div class="search-filter">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Search menu items..." 
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()">
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-categories">
+    <!-- No Results Found Section -->
+    <div class="no-results-found" *ngIf="filteredItems.length === 0 && searchQuery">
+      <div class="no-results-content">
+        <i class="fas fa-utensils-slash no-results-icon"></i>
+        <h3>No dishes found for "{{searchQuery}}"</h3>
+        <p>We couldn't find any menu items matching your search. Try something else or browse our categories.</p>
+        <div class="suggestions">
+          <p>Popular searches:</p>
+          <div class="suggestion-tags">
+            <button class="suggestion-tag" (click)="searchQuery = 'Salad'; onSearch()">Salad</button>
+            <button class="suggestion-tag" (click)="searchQuery = 'Burger'; onSearch()">Burger</button>
+            <button class="suggestion-tag" (click)="searchQuery = 'Pizza'; onSearch()">Pizza</button>
+            <button class="suggestion-tag" (click)="searchQuery = 'Cake'; onSearch()">Cake</button>
+          </div>
+        </div>
+        <button class="clear-search-btn" (click)="clearSearch()">
+          <i class="fas fa-times"></i> Clear Search
+        </button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="filteredItems.length > 0">
+      <ng-container *ngIf="activeTab !== 'all'; else allCategories">
+        <div class="category-section">
+          <h3 class="category-title">{{getCategoryTitle(activeTab)}}</h3>
+          <div class="menu-grid">
+            <div 
+              class="menu-item" 
+              [class.veg]="item.isVeg"
+              *ngFor="let item of getVisibleItems()">
+              
+              <div class="item-badge" *ngIf="item.badge">{{item.badge}}</div>
+              <div class="item-image">
+                <img [src]="item.image" [alt]="item.name">
+                <button class="quick-view-btn" (click)="openQuickView(item)">Quick View</button>
+              </div>
+              <div class="item-info">
+                <h3>{{item.name}}</h3>
+                <p class="item-description">{{item.description}}</p>
+                <div class="item-meta">
+                  <span class="price">₹{{item.price}}</span>
+                  <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <span>{{item.rating}}</span>
+                    <span class="review-count">({{item.reviews}})</span>
+                  </div>
+                </div>
+                <div class="item-actions">
+                  <button class="add-to-cart-btn" (click)="addToCart(item)">
+                    <i class="fas fa-plus"></i> Add to Cart
+                  </button>
+                  <button 
+                    class="fav-btn" 
+                    [class.active]="item.isFavorite"
+                    (click)="toggleFavorite(item)">
+                    <i class="far fa-heart"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #allCategories>
+        <ng-container *ngFor="let category of getUniqueCategories()">
+          <div class="category-section">
+            <h3 class="category-title">{{getCategoryTitle(category)}}</h3>
+            <div class="menu-grid">
+              <div 
+                class="menu-item" 
+                [class.veg]="item.isVeg"
+                *ngFor="let item of getItemsByCategory(category) | slice:0:itemsToShow">
+                
+                <div class="item-badge" *ngIf="item.badge">{{item.badge}}</div>
+                <div class="item-image">
+                  <img [src]="item.image" [alt]="item.name">
+                  <button class="quick-view-btn" (click)="openQuickView(item)">Quick View</button>
+                </div>
+                <div class="item-info">
+                  <h3>{{item.name}}</h3>
+                  <p class="item-description">{{item.description}}</p>
+                  <div class="item-meta">
+                    <span class="price">₹{{item.price}}</span>
+                    <div class="rating">
+                      <i class="fas fa-star"></i>
+                      <span>{{item.rating}}</span>
+                      <span class="review-count">({{item.reviews}})</span>
+                    </div>
+                  </div>
+                  <div class="item-actions">
+                    <button class="add-to-cart-btn" (click)="addToCart(item)">
+                      <i class="fas fa-plus"></i> Add to Cart
+                    </button>
+                    <button 
+                      class="fav-btn" 
+                      [class.active]="item.isFavorite"
+                      (click)="toggleFavorite(item)">
+                      <i class="far fa-heart"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-template>
+    </ng-container>
+  </div>
+
+  <div class="menu-footer" *ngIf="itemsToShow < filteredItems.length && activeTab !== 'all'">
+    <button class="load-more-btn" (click)="loadMore()">Load More Items</button>
+  </div>
+</div>
+
+<!-- Quick View Modal (keep your existing modal code) -->
+<!-- Professional Quick View Modal -->
+<div class="quick-view-overlay" *ngIf="quickViewItem" (click)="closeQuickView()">
+  <div class="quick-view-container" (click)="$event.stopPropagation()">
+    <!-- Close Button -->
+    <button class="close-modal-btn" (click)="closeQuickView()" aria-label="Close product view">
+      <i class="fas fa-times"></i>
+    </button>
+
+    <!-- Main Content Grid -->
+    <div class="quick-view-grid">
+      <!-- Image Gallery Column -->
+      <div class="product-gallery">
+        <div class="main-image-container">
+          <img [src]="quickViewItem.image" [alt]="quickViewItem.name + ' product image'" class="main-image">
+          <span class="product-badge" *ngIf="quickViewItem.badge">{{quickViewItem.badge}}</span>
+        </div>
+        
+        <div class="thumbnail-scroller">
+          <div class="thumbnail" *ngFor="let img of quickViewItem.images" 
+               [class.active]="img === quickViewItem.image"
+               (click)="quickViewItem.image = img">
+            <img [src]="img" [alt]="quickViewItem.name + ' thumbnail'">
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info Column -->
+      <div class="product-details">
+        <!-- Product Header -->
+        <div class="product-header">
+          <div class="title-section">
+            <h1 class="product-title">{{quickViewItem.name}}</h1>
+            <div class="dietary-tags">
+              <span class="dietary-tag" [class.veg]="quickViewItem.isVeg" [class.nonveg]="!quickViewItem.isVeg">
+                {{quickViewItem.isVeg ? 'Vegetarian' : 'Non-Vegetarian'}}
+              </span>
+              <span class="spice-tag" *ngIf="quickViewItem.spiceLevel">
+                <i class="fas fa-pepper-hot"></i> {{quickViewItem.spiceLevel}}/5 Spice
+              </span>
+            </div>
+          </div>
+          
+          <div class="price-section">
+            <div class="current-price">₹{{calculateTotalPrice() | number:'1.2-2'}}</div>
+            <div class="price-unit">per {{quickViewItem.unit || 'item'}}</div>
+          </div>
+        </div>
+
+        <!-- Rating and Popularity -->
+        <div class="social-proof">
+          <div class="rating-badge">
+            <div class="stars">
+              <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]" 
+                 [class.filled]="star <= quickViewItem.rating"></i>
+            </div>
+            <span class="rating-value">{{quickViewItem.rating | number:'1.1-1'}}</span>
+            <span class="review-count">({{quickViewItem.reviews | number}} reviews)</span>
+          </div>
+          <div class="popularity-badge" *ngIf="quickViewItem.orders > 100">
+            <i class="fas fa-bolt"></i> {{quickViewItem.orders | number}}+ orders
+          </div>
+        </div>
+        <!-- Expandable Details Section -->
+        <div class="expandable-section" [class.expanded]="detailsExpanded">
+          <div class="expandable-content">
+            <div class="details-column" *ngIf="quickViewItem.ingredients">
+              <h3>Ingredients</h3>
+              <ul class="ingredients-list">
+                <li *ngFor="let ingredient of quickViewItem.ingredients">{{ingredient}}</li>
+              </ul>
+            </div>
+            
+            <div class="details-column" *ngIf="quickViewItem.nutrition">
+              <h3>Nutritional Information</h3>
+              <div class="nutrition-facts">
+                <div class="nutrition-row" *ngFor="let item of quickViewItem.nutrition">
+                  <span class="nutrition-label">{{item.label}}</span>
+                  <span class="nutrition-value">{{item.value}}</span>
+                  <span class="nutrition-dv" *ngIf="item.dailyValue">({{item.dailyValue}}% DV)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customization Options -->
+        <div class="customization-section" *ngIf="quickViewItem.options?.length">
+          <h2>Customization Options</h2>
+          
+          <div class="option-group" *ngFor="let group of quickViewItem.options">
+            <div class="option-group-header">
+              <h3>{{group.name}}</h3>
+              <span class="selection-rule">{{group.multiple ? 'Select multiple' : 'Select one'}}</span>
+              <span class="required-badge" *ngIf="group.required">Required</span>
+            </div>
+            
+            <div class="option-list">
+              <label class="option-item" *ngFor="let option of group.items" 
+                     [class.unavailable]="!option.available">
+                <input [type]="group.multiple ? 'checkbox' : 'radio'" 
+                       [name]="group.name"
+                       [(ngModel)]="option.selected"
+                       [disabled]="!option.available">
+                <span class="option-content">
+                  <span class="option-name">{{option.name}}</span>
+                  <span class="option-price" *ngIf="option.price > 0">+₹{{option.price | number}}</span>
+                  <span class="option-status" *ngIf="!option.available">Currently unavailable</span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Controls -->
+        <div class="order-controls">
+          <div class="quantity-selector">
+            <button class="quantity-btn minus" (click)="updateQuantity(-1)" 
+                    [disabled]="quickViewItem.quantity <= 1">
+              <i class="fas fa-minus"></i>
+            </button>
+            <span class="quantity-display">{{quickViewItem.quantity}}</span>
+            <button class="quantity-btn plus" (click)="updateQuantity(1)" 
+                    [disabled]="quickViewItem.quantity >= 10">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          
+          <div class="special-request">
+            <label for="special-notes">Special Instructions</label>
+            <textarea id="special-notes" 
+                      [(ngModel)]="quickViewItem.specialInstructions" 
+                      placeholder="Any special preparation requests?"></textarea>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="primary-action" (click)="addToCartFromQuickView()">
+            <i class="fas fa-shopping-cart"></i>
+            Add to Cart - ₹{{calculateTotalPrice() | number:'1.2-2'}}
+          </button>
+          
+          <button class="secondary-action" (click)="toggleFavorite(quickViewItem)" 
+                  [class.favorited]="quickViewItem.isFavorite">
+            <i class="far" [class.fa-heart]="quickViewItem.isFavorite" [class.fa-heart]="!quickViewItem.isFavorite"></i>
+            {{quickViewItem.isFavorite ? 'Saved' : 'Save'}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

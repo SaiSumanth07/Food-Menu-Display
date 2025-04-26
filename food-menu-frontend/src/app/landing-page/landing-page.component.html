@@ -1,0 +1,66 @@
+<div class="landing-container">
+    <header class="landing-header">
+      <div class="logo">
+        <i class="fas fa-utensils"></i>
+        <h1>Delicious Bites</h1>
+      </div>
+      <p class="tagline">Discover the finest culinary experiences</p>
+    </header>
+  
+    <main class="landing-main">
+      <div class="hero-section">
+        <div class="hero-content">
+          <h2>Welcome to Delicious Bites</h2>
+          <p>Order your favorite meals from our exquisite menu</p>
+          
+          <div class="auth-container" *ngIf="!isAuthenticated">
+            <div class="auth-tabs">
+              <button [class.active]="showLoginForm" (click)="toggleForm()">Login</button>
+              <button [class.active]="!showLoginForm" (click)="toggleForm()">Sign Up</button>
+            </div>
+  
+            <form class="auth-form" *ngIf="showLoginForm" (ngSubmit)="onLogin()">
+              <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" [(ngModel)]="loginData.email" name="loginEmail" required>
+              </div>
+              <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" [(ngModel)]="loginData.password" name="loginPassword" required>
+              </div>
+              <button type="submit" class="submit-btn">Login</button>
+            </form>
+  
+            <form class="auth-form" *ngIf="!showLoginForm" (ngSubmit)="onSignup()">
+              <div class="form-group">
+                <label for="signup-name">Full Name</label>
+                <input type="text" id="signup-name" [(ngModel)]="signupData.name" name="signupName" required>
+              </div>
+              <div class="form-group">
+                <label for="signup-email">Email</label>
+                <input type="email" id="signup-email" [(ngModel)]="signupData.email" name="signupEmail" required>
+              </div>
+              <div class="form-group">
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" [(ngModel)]="signupData.password" name="signupPassword" required>
+              </div>
+              <div class="form-group">
+                <label for="signup-confirm">Confirm Password</label>
+                <input type="password" id="signup-confirm" [(ngModel)]="signupData.confirmPassword" name="signupConfirm" required>
+              </div>
+              <button type="submit" class="submit-btn">Sign Up</button>
+            </form>
+          </div>
+  
+          <div class="welcome-message" *ngIf="isAuthenticated">
+            <h3>Welcome back!</h3>
+            <p>Redirecting you to our delicious menu...</p>
+          </div>
+        </div>
+        
+        <div class="hero-image">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836" alt="Delicious food">
+        </div>
+      </div>
+    </main>
+  </div>
